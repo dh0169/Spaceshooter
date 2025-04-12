@@ -1,7 +1,12 @@
 #include "Bullet.h"
 
-void Bullet::checkBounds(){
-	return;
+bool Bullet::isOutOfBounds(){
+    return (
+        position.x < -radius ||
+        position.x > ofGetWidth() + radius ||
+        position.y < -radius ||
+        position.y > ofGetHeight() + radius
+    );
 }
 
 void Bullet::setup(glm::vec3 pos, glm::vec3 vel) {

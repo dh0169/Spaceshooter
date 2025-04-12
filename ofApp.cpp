@@ -57,11 +57,9 @@ void ofApp::resetGame() {
     player.lives = 3;
     player.invincibleTimer = 3.0; // Invincible for 3 seconds on spawn
     
-    // Clear entities
     bullets.clear();
     asteroids.clear();
     
-    // Spawn initial asteroids
     spawnAsteroids(4);
 }
 
@@ -69,13 +67,13 @@ void ofApp::spawnAsteroids(int num) {
     for (int i = 0; i < num; i++) {
         Asteroid asteroid;
         
-        // Don't spawn too close to player
+        // Spawn astroid a certain distnace away from player
         glm::vec3 pos = glm::vec3(ofRandom(100, ofGetWidth() - 100),ofRandom(100, ofGetHeight() - 100),0);
 		while (glm::distance(pos, player.position) < 350){
             pos = glm::vec3(ofRandom(100, ofGetWidth() - 100),ofRandom(100, ofGetHeight() - 100),0);
         }
         
-        asteroid.setup(3, pos); // Start with largest size
+        asteroid.setup(3, pos);
         asteroids.push_back(asteroid);
     }
 }
@@ -86,9 +84,8 @@ void ofApp::update() {
     deltaTime = currentTime - lastTime;
     lastTime = currentTime;
     
-    // Limit delta time to prevent physics issues on lag
-    if (deltaTime > 0.05) deltaTime = 0.05;
     
+
     
     if (gameOver) {
         // In game over state, only handle restart
@@ -136,7 +133,9 @@ void ofApp::update() {
     // Update bullets
     for (int i = bullets.size() - 1; i >= 0; i--) {
         bullets[i].integrate(deltaTime);
-        bullets[i].checkBounds();
+        if(bullets[i].isOutOfBounds()){
+            bullets.erase(bullets.begin() + i);
+        }
     }
     
     // Update asteroids
@@ -228,11 +227,7 @@ void ofApp::checkCollisions() {
             if (dist < (player.radius + asteroid.radius)) {
                 // Player hit asteroid
                 player.lives--;
-                
-                // Create explosion
-                explosionEmitter.emit(100, player.position, player.velocity * 0.5f, ofColor(255, 100, 100));
-                
-                // Play death sound
+                explosionEmitter.emit(100, player.position, player.velocity * 0.5f, ofColor::red);
                 playerDeathSound.play();
                 
                 if (player.lives <= 0) {

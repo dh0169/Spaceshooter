@@ -18,7 +18,7 @@ public:
     
     // degrees
     float angle = 0.0;            
-    float angularVelocity = 0.0;
+    float angularVelocity = 0.0;  // degrees per second
     float angularAcceleration = 0.0;
     float rotationalForce = 0.0;
     
